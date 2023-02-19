@@ -15,11 +15,11 @@ export default async function (req, res) {
     return;
   }
 
-  const animal = req.body.animal || '';
-  if (animal.trim().length === 0) {
+  const sentence = req.body.sentence || '';
+  if (sentence.trim().length === 0) {
     res.status(400).json({
       error: {
-        message: "Please enter a valid animal",
+        message: "Please enter a any sentence",
       }
     });
     return;
@@ -28,10 +28,12 @@ export default async function (req, res) {
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(animal),
-      temperature: 0.6,
+      prompt: generatePrompt(sentence),
+      temperature: 0.1,
+      max_tokens: 2000
     });
     res.status(200).json({ result: completion.data.choices[0].text });
+    console.log(completion.data.choices)
   } catch(error) {
     // Consider adjusting the error handling logic for your use case
     if (error.response) {
@@ -48,15 +50,12 @@ export default async function (req, res) {
   }
 }
 
-function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
+function generatePrompt(sentence) {
+  return `If you see bad grammar in my sentences, give me advice by applying the following rules
+  rules
+  1. Write a solution to each incorrect statement in bullet format
+  2. Explain the etymology of why this is a good phrase (put the etymology in brackets).
+  
+  sentence: ${sentence}
+  `;
 }
