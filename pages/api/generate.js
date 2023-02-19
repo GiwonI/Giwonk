@@ -30,7 +30,7 @@ export default async function (req, res) {
       model: "text-davinci-003",
       prompt: generatePrompt(sentence),
       temperature: 0.1,
-      max_tokens: 4000
+      max_tokens: 2000
     });
     res.status(200).json({ result: completion.data.choices[0].text });
     console.log(completion.data.choices)
@@ -53,8 +53,11 @@ export default async function (req, res) {
 function generatePrompt(sentence) {
   return `If you see bad grammar in my sentences, give me advice by applying the following rules
   rules
-  1. Write a solution to each incorrect statement in bullet format
-  2. Explain the etymology of why this is a good phrase (put the etymology in brackets).
+  1. Write a solution to each incorrect statement in bullet format 
+  2. If the input given to you is a success, it will be labeled as such. Correct Sentence: The given input value
+  3. Explain the etymology of why this is a good phrase (put the etymology in brackets).
+  4. Grammatically, if something is good to know, write it in (To know: ~)
+  5. Give each answer as a bullet
   
   sentence: ${sentence}
   `;
