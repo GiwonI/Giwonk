@@ -16,7 +16,8 @@ export default async function (req, res) {
   }
 
   const sentence = req.body.sentence || '';
-  if (sentence.trim().length === 0) {
+  const expected = req.body.expected || '';
+  if (sentence.trim().length === 0 ) {
     res.status(400).json({
       error: {
         message: "Please enter a any sentence",
@@ -25,10 +26,19 @@ export default async function (req, res) {
     return;
   }
 
+  if (expected.trim().length === 0 ) {
+    res.status(400).json({
+      error: {
+        message: "Please enter a any expected",
+      }
+    });
+    return;
+  }
+
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(sentence),
+      prompt: generatePrompt(sentence, expected),
       temperature: 0.1,
       max_tokens: 2000
     });
@@ -50,15 +60,15 @@ export default async function (req, res) {
   }
 }
 
-function generatePrompt(sentence) {
+function generatePrompt(sentence, expected) {
   return `If you see bad grammar in my sentences, give me advice by applying the following rules
   rules
-  1. Write a solution to each incorrect statement in bullet format 
-  2. If the input given to you is a success, it will be labeled as such. Correct Sentence: The given input value
-  3. Explain the etymology of why this is a good phrase (put the etymology in brackets).
-  4. Grammatically, if something is good to know, write it in (To know: ~)
-  5. Give each answer as a bullet
+  Input = 한글 문장
+  Expected = 내가 한글 문장을 영어로 번역한거
+  Result = 너가 생각하는 좋은 영어 문장
+  Explanation(each explanation as bullet form) = 고쳐야 하는 이유 상세하게 영어권 관점에서 설명 (왜 적절한지 영어권 사람들의 생각 관점에서도 설명해줘)
   
-  sentence: ${sentence}
+  Input: ${sentence}
+  Expected: ${expected}
   `;
 }

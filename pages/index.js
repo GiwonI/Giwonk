@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 
 export default function Home() {
   const [sentence, setSentence] = useState("");
+  const [expected, setExpected] = useState("");
   const [result, setResult] = useState();
 
   async function onSubmit(event) {
@@ -14,7 +15,10 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ sentence: sentence }),
+        body: JSON.stringify({
+          sentence: sentence,
+          expected: expected,
+        }),
       });
 
       const data = await response.json();
@@ -45,6 +49,13 @@ export default function Home() {
             placeholder="Enter an animal"
             value={sentence}
             onChange={(e) => setSentence(e.target.value)}
+          />
+          <textarea
+              type="textarea"
+              name="eng_sentence"
+              placeholder="Enter an animal"
+              value={expected}
+              onChange={(e) => setExpected(e.target.value)}
           />
           <input type="submit" value="fix!" />
         </form>
